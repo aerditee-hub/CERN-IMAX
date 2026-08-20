@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Choose a Documentary</title>
+<style>
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: #111;
+    color: #eee;
+    font-family: system-ui, Arial, sans-serif;
+  }
+  .wrap {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 24px 20px 32px;
+    box-sizing: border-box;
+  }
+  h1 {
+    font-size: 18px;
+    margin: 0 0 16px;
+    text-align: center;
+    color: #fff;
+  }
+  .list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  button.opt {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 14px;
+    background: #1d1d1d;
+    border: 1px solid #333;
+    border-radius: 8px;
+    color: #eee;
+    font-size: 15px;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  button.opt:hover, button.opt:focus {
+    background: #2a2a2a;
+    border-color: #6aa0ff;
+    outline: none;
+  }
+  button.opt .icon {
+    font-size: 18px;
+    flex: 0 0 auto;
+  }
+  button.opt .label {
+    flex: 1 1 auto;
+  }
+  button.opt .file {
+    font-size: 12px;
+    color: #888;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Choose Documentary To Be Played</h1>
+    <div class="list" id="list"></div>
+  </div>
+
+<script>
+  /* -----------------------------------------------------------
+     Edit this array to match the video files sitting next to this
+     HTML file. "label" is what the user sees, "src" is the actual
+     filename (or full URL) that gets loaded into the video plane.
+  ----------------------------------------------------------- */
+  const VIDEOS = [
+    { label: 'Documentary 1', src: 'Whats REALLY Happening at CERN.mp4' },
+    { label: 'Documentary 2', src: 'Visit the ATLAS experiment in 360° .mp4' },
+    { label: 'Documentary 3', src: 'How does the Large Hadron Collider Work .mp4' },
+    { label: 'Documentary 4', src: 'video4.mp4' },
+  ];
+
+  // fileIndex of the video plane this picker should control, passed
+  // in from the parent page as a query param (?target=1).
+  const params = new URLSearchParams(location.search);
+  const targetIndex = Number(params.get('target')) || 1;
+
+  const listEl = document.getElementById('list');
+  VIDEOS.forEach(v => {
+    const btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.innerHTML = '<span class="icon">&#9658;</span>' +
+                     '<span class="label">' + v.label + '</span>' +
+                     '<span class="file">' + v.src + '</span>';
+    btn.addEventListener('click', () => choose(v.src));
+    listEl.appendChild(btn);
+  });
+
+  function choose(src) {
+    window.parent.postMessage({ type: 'selectVideo', fileIndex: targetIndex, src: src }, '*');
+    window.parent.postMessage({ type: 'closeOverlay' }, '*');
+  }
+</script>
+</body>
+</html>
